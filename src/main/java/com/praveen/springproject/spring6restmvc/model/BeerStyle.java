@@ -4,9 +4,13 @@ import lombok.Data;
 
 import java.util.UUID;
 
-@Data
-public class BeerStyle {
+public enum BeerStyle {
 
-    private UUID id;
-    private String style;
+    STOUT,
+    LAGER,
+    ALE,
+    INDIA_PALE_ALE,
+    BROWN_ALE,
+    PORTER
+
 }
