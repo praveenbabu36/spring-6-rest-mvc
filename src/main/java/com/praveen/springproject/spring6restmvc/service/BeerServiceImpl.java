@@ -22,7 +22,7 @@ public class BeerServiceImpl implements BeerService {
         Beer beer1 = Beer.builder()
                         .id(UUID.randomUUID())
                         .name("Spider IPA")
-                        .beerStyle(BeerStyle.INDIA_PALE_ALE)
+                        .beerStyle(BeerStyle.IPA)
                         .qtyOnHand(25)
                         .price(new BigDecimal(10.00))
                         .build();
