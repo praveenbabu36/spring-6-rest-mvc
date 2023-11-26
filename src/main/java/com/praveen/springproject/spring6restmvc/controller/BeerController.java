@@ -4,6 +4,7 @@ import com.praveen.springproject.spring6restmvc.model.Beer;
 import com.praveen.springproject.spring6restmvc.service.BeerService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -32,7 +33,11 @@ public class BeerController {
         // save and get the saved one
         Beer savedBear = beerService.saveBeer(beer);
 
-        return new ResponseEntity(HttpStatus.CREATED);
+        HttpHeaders headers = new HttpHeaders();
+
+        headers.add("Location", "/api/v1/beer/" + savedBear.getId() );
+
+        return new ResponseEntity(headers, HttpStatus.CREATED);
     }
 
     //list beers
