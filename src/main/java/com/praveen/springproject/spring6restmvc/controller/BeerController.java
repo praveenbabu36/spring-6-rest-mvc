@@ -4,11 +4,10 @@ import com.praveen.springproject.spring6restmvc.model.Beer;
 import com.praveen.springproject.spring6restmvc.service.BeerService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +23,16 @@ public class BeerController {
     public Beer getMyFavBeer() {
         log.debug("In BeerController. Get my Fav. Beer.");
         return beerService.getBeerById(UUID.randomUUID());
+    }
+
+
+    @PostMapping
+    public ResponseEntity saveBeer(@RequestBody Beer beer) {
+
+        // save and get the saved one
+        Beer savedBear = beerService.saveBeer(beer);
+
+        return new ResponseEntity(HttpStatus.CREATED);
     }
 
     //list beers

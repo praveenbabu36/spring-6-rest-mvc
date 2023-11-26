@@ -3,6 +3,7 @@ package com.praveen.springproject.spring6restmvc.model;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 
 import java.util.Date;
 import java.util.UUID;
@@ -15,4 +16,6 @@ public class Customer {
     private String name;
     private Date createdDate;
     private String comments;
+
+
 }
