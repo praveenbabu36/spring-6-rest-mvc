@@ -11,6 +11,7 @@ public enum BeerStyle {
     ALE,
     INDIA_PALE_ALE,
     BROWN_ALE,
-    PORTER
+    PORTER,
+    TRIPEL
 
 }
