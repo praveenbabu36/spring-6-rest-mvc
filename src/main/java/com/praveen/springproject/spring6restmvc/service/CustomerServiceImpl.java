@@ -3,6 +3,7 @@ package com.praveen.springproject.spring6restmvc.service;
 import com.praveen.springproject.spring6restmvc.model.Customer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
 
@@ -80,5 +81,20 @@ public class CustomerServiceImpl implements CustomerService{
     @Override
     public void deleteCustomer(UUID customerId) {
         customerMap.remove(customerId);
+    }
+
+
+    //patch customer
+    @Override
+    public void patchCustomer(UUID id, Customer customer) {
+
+        Customer existing = getCustomerById(id);
+
+        if(StringUtils.hasText(customer.getName()) )
+            existing.setName(customer.getName());
+
+        if(StringUtils.hasText(customer.getComments()))
+            existing.setComments(customer.getComments());
+
     }
 }
