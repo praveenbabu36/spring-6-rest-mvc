@@ -22,6 +22,25 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
+    // list customers
+    @RequestMapping(method = RequestMethod.GET)
+    private List<Customer> listCustomers(){
+
+        log.debug("In Customer Controller listCustomers()...");
+
+        return customerService.listCustomers();
+    }
+
+    //list customers by id
+    @RequestMapping(value="{customerId}", method = RequestMethod.GET)
+    public Customer getCustomerById(@PathVariable("customerId") UUID customerId) {
+
+        log.debug("In Customer Controller getCustomerById()...1234");
+
+        return customerService.getCustomerById(customerId);
+    }
+
+    //Create new customer
     @PostMapping
     public ResponseEntity saveCustomer(@RequestBody Customer customer) {
 
@@ -33,22 +52,14 @@ public class CustomerController {
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
 
-    @RequestMapping(method = RequestMethod.GET)
-    private List<Customer> listCustomers(){
 
-        log.debug("In Customer Controller listCustomers()...");
+    //Update existing customer
+    @PutMapping(value="{customerId}")
+    public ResponseEntity updateCustomer(@PathVariable("customerId") UUID customerId, @RequestBody Customer customer) {
 
-        return customerService.listCustomers();
+        customerService.updateCustomer(customerId, customer);
+
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
-
-    @RequestMapping(value="{customerId}", method = RequestMethod.GET)
-    public Customer getCustomerById(@PathVariable("customerId") UUID customerId) {
-
-        log.debug("In Customer Controller getCustomerById()...1234");
-
-        return customerService.getCustomerById(customerId);
-    }
-
-
 
 }
