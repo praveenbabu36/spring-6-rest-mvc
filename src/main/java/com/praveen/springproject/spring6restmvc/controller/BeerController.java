@@ -26,8 +26,22 @@ public class BeerController {
         return beerService.getBeerById(UUID.randomUUID());
     }
 
+    //list beers
+    @RequestMapping(method = RequestMethod.GET)
+    public List<Beer> listBeers(){
+        return beerService.listBeers();
+    }
 
-    @PostMapping
+
+    //list bear by id
+    @RequestMapping(value="{beerId}", method = RequestMethod.GET)
+    public Beer getBeerById(@PathVariable("beerId") UUID beerId){
+        log.debug("In BeerController. Get Beer by Id.");
+        return beerService.getBeerById(beerId);
+    }
+
+    //create new bear
+    @PostMapping()
     public ResponseEntity saveBeer(@RequestBody Beer beer) {
 
         // save and get the saved one
@@ -40,16 +54,16 @@ public class BeerController {
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
 
-    //list beers
-    @RequestMapping(method = RequestMethod.GET)
-    public List<Beer> listBeers(){
-        return beerService.listBeers();
+
+    //update exitingg beer
+    @PutMapping(value="{beerId}")
+    public ResponseEntity updateBeer(@PathVariable("beerId") UUID beerId,  @RequestBody Beer beer) {
+
+        beerService.updateBeerById(beerId, beer);
+
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
-    @RequestMapping(value="{beerId}", method = RequestMethod.GET)
-    public Beer getBeerById(@PathVariable("beerId") UUID beerId){
-        log.debug("In BeerController. Get Beer by Id.");
-        return beerService.getBeerById(beerId);
-    }
+
 
 }
