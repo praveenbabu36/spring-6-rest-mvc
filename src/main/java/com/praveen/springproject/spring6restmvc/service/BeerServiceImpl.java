@@ -29,7 +29,7 @@ public class BeerServiceImpl implements BeerService {
 
         Beer beer2 = Beer.builder()
                         .id(UUID.randomUUID())
-                        .name("Allagash Tripel")
+                        .name("Golden Monkey Tripel")
                         .beerStyle(BeerStyle.TRIPEL)
                         .qtyOnHand(30)
                         .price(new BigDecimal(7.00))
