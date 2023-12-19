@@ -37,6 +37,27 @@ class BeerControllerTest {
 
     BeerServiceImpl beerSrvcImpl = new BeerServiceImpl();
 
+
+    @Test
+    void testListBeers() throws Exception {
+
+        //setup the methods to use when called
+        given(beerService.listBeers()).willReturn(beerSrvcImpl.listBeers());
+
+        //perform get and confirm the response has 3 json objects
+        mockMvc.perform(
+                    get("/api/v1/beer")
+                            .accept(MediaType.APPLICATION_JSON)
+
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.length()", is(3)))
+        ;
+
+
+    }
+
     @Test
     void getBeerById() throws Exception {
         /*System.out.println(
