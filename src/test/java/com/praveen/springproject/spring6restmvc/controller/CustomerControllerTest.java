@@ -17,13 +17,17 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import static org.mockito.ArgumentMatchers.any;
-
-import static org.mockito.BDDMockito.given;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
 import static org.hamcrest.core.Is.is;
 
@@ -47,6 +51,34 @@ class CustomerControllerTest {
     }
 
 
+
+    //test update customer
+    @Test
+    void updateCustomer() throws Exception {
+
+        //get first customer obj
+        Customer cust = custSrvcImpl.listCustomers().get(0);
+        cust.setComments("Prefers Lager");
+        cust.setName("Mr. Green");
+
+        //perform put
+        mockMvc.perform(
+                    put("/api/v1/customer/" + cust.getId())
+                            .accept(MediaType.APPLICATION_JSON)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(cust))
+                )
+                .andExpect(status().isNoContent())
+        ;
+
+        //to verify whether the underlying service method is called
+        verify(customerService).updateCustomer(any(UUID.class), any(Customer.class));
+
+        System.out.println(custSrvcImpl.listCustomers());
+    }
+
+
+    //test create new customer
     @Test
     void createNewCustomer() throws Exception {
 
@@ -74,6 +106,7 @@ class CustomerControllerTest {
         System.out.println(custSrvcImpl.listCustomers());
     }
 
+    //test get customer list
     @Test
     void listCustomers() throws Exception {
 
