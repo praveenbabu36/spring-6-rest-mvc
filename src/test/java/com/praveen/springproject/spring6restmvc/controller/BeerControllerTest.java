@@ -1,8 +1,11 @@
 package com.praveen.springproject.spring6restmvc.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.praveen.springproject.spring6restmvc.model.Beer;
+import com.praveen.springproject.spring6restmvc.model.BeerStyle;
 import com.praveen.springproject.spring6restmvc.service.BeerService;
 import com.praveen.springproject.spring6restmvc.service.BeerServiceImpl;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -14,10 +17,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.mockito.ArgumentMatchers.any;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import static org.mockito.BDDMockito.given;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 import static org.hamcrest.core.Is.is;
@@ -35,7 +40,43 @@ class BeerControllerTest {
     @MockBean
     BeerService beerService;
 
-    BeerServiceImpl beerSrvcImpl = new BeerServiceImpl();
+    @Autowired
+    ObjectMapper objectMapper;
+
+    BeerServiceImpl beerSrvcImpl;
+
+    @BeforeEach
+    void setup(){
+        beerSrvcImpl = new BeerServiceImpl();
+    }
+
+    @Test
+    void testCreateNewBeer() throws Exception {
+
+        // new beer
+        Beer newBeer = Beer.builder()
+                        .name("Budweiser Platinum")
+                        .beerStyle(BeerStyle.LAGER)
+                        .qtyOnHand(10)
+                        .price(new BigDecimal(6.99))
+                        .build();
+
+        //setup methods
+        given(beerService.saveBeer(any(Beer.class))).willReturn(beerSrvcImpl.saveBeer(newBeer));
+
+        //perform post
+        mockMvc.perform(
+                        post("/api/v1/beer")
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(newBeer))
+                )
+                .andExpect(status().isCreated())
+                .andExpect(header().exists("Location"))
+        ;
+
+        System.out.println(beerSrvcImpl.listBeers());
+    }
 
 
     @Test
