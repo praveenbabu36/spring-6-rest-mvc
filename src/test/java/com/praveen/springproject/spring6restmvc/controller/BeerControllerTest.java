@@ -16,8 +16,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import static org.mockito.BDDMockito.given;
@@ -50,6 +50,38 @@ class BeerControllerTest {
         beerSrvcImpl = new BeerServiceImpl();
     }
 
+    //test put
+    @Test
+    void testUpdateBeer() throws Exception{
+
+        //get first beer obj
+        Beer testBeer = beerSrvcImpl.listBeers().get(0);
+
+        //update beer name
+        testBeer.setName("Goose Island");
+        testBeer.setBeerStyle(BeerStyle.LAGER);
+
+        //perform put
+        mockMvc.perform(
+                    put("/api/v1/beer/" + testBeer.getId())
+                            .accept(MediaType.APPLICATION_JSON)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(testBeer))
+                )
+                .andExpect(status().isNoContent())
+        ;
+
+        //to verify whether the underlying service method is called
+        verify(beerService).updateBeerById(any(UUID.class), any(Beer.class));
+
+        //negative test
+        verify(beerService).listBeers();
+
+        System.out.println(beerSrvcImpl.listBeers());
+    }
+
+
+    // test post
     @Test
     void testCreateNewBeer() throws Exception {
 
@@ -79,6 +111,7 @@ class BeerControllerTest {
     }
 
 
+    // test get
     @Test
     void testListBeers() throws Exception {
 
