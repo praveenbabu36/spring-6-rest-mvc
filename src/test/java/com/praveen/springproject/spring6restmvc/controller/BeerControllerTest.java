@@ -7,6 +7,8 @@ import com.praveen.springproject.spring6restmvc.service.BeerService;
 import com.praveen.springproject.spring6restmvc.service.BeerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,6 +27,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 import static org.hamcrest.core.Is.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 //@SpringBootTest
 @WebMvcTest(BeerController.class)
@@ -48,6 +51,28 @@ class BeerControllerTest {
     void setup(){
         beerSrvcImpl = new BeerServiceImpl();
     }
+
+    //test delete beer
+    @Test
+    void testDeleteBeer() throws Exception {
+
+        //get first beer obj
+        Beer testBeer = beerSrvcImpl.listBeers().get(0);
+
+        mockMvc.perform(
+                    delete("/api/v1/beer/" + testBeer.getId())
+                )
+                .andExpect(status().isNoContent())
+        ;
+
+        ArgumentCaptor<UUID> uuidCaptor = ArgumentCaptor.forClass(UUID.class);
+
+        verify(beerService).deleteBeerById(uuidCaptor.capture());
+
+        assertThat(123).isEqualTo(uuidCaptor.getValue());
+
+    }
+
 
     //test put
     @Test
