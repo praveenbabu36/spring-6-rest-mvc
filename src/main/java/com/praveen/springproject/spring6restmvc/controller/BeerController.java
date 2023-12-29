@@ -18,8 +18,11 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/beer")
+//@RequestMapping("/api/v1/beer") -- replace this with mathod level mapping
 public class BeerController {
+
+    public static final String BEER_PATH = "/api/v1/beer";
+    public static final String BEER_PATH_ID = BEER_PATH + "/{beerId}";
 
     private final BeerService beerService;
 
@@ -29,21 +32,25 @@ public class BeerController {
     }
 
     //list beers
-    @RequestMapping(method = RequestMethod.GET)
+    // Use RequestMapping or GetMapping
+    // @RequestMapping(value = BEER_PATH, method = RequestMethod.GET)
+    @GetMapping(value = BEER_PATH)
     public List<Beer> listBeers(){
         return beerService.listBeers();
     }
 
 
     //list bear by id
-    @RequestMapping(value="{beerId}", method = RequestMethod.GET)
+    // Use RequestMapping or GetMapping
+    //@RequestMapping(value="{beerId}", method = RequestMethod.GET)
+    @GetMapping(value=BEER_PATH_ID)
     public Beer getBeerById(@PathVariable("beerId") UUID beerId){
         log.debug("In BeerController. Get Beer by Id.");
         return beerService.getBeerById(beerId);
     }
 
     //create new bear
-    @PostMapping()
+    @PostMapping(value=BEER_PATH)
     public ResponseEntity saveBeer(@RequestBody Beer beer) {
 
         // save and get the saved one
@@ -51,14 +58,14 @@ public class BeerController {
 
         HttpHeaders headers = new HttpHeaders();
 
-        headers.add("Location", "/api/v1/beer/" + savedBear.getId() );
+        headers.add("Location", BEER_PATH + savedBear.getId() );
 
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
 
 
     //update exitingg beer
-    @PutMapping(value="{beerId}")
+    @PutMapping(value=BEER_PATH_ID)
     public ResponseEntity updateBeer(@PathVariable("beerId") UUID beerId,  @RequestBody Beer beer) {
 
         beerService.updateBeerById(beerId, beer);
@@ -68,7 +75,7 @@ public class BeerController {
 
 
     //delete beer
-    @DeleteMapping(value="{beerId}")
+    @DeleteMapping(value=BEER_PATH_ID)
     public ResponseEntity deleteBeer(@PathVariable("beerId") UUID beerId) {
 
         beerService.deleteBeerById(beerId);
@@ -79,7 +86,7 @@ public class BeerController {
 
 
     // update method for patch request
-    @PatchMapping(value="{beerId}")
+    @PatchMapping(value=BEER_PATH_ID)
     public ResponseEntity patchBeer(@PathVariable("beerId") UUID beerId, @RequestBody Beer beer) {
 
         beerService.patchBeer(beerId, beer);

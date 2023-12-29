@@ -77,7 +77,7 @@ class BeerControllerTest {
 
         //perform patch
         mockMvc.perform(
-                    patch("/api/v1/beer/" + firstBeer.getId())
+                    patch(BeerController.BEER_PATH + "/" + firstBeer.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(newBeer))
@@ -88,10 +88,10 @@ class BeerControllerTest {
         verify(beerService).patchBeer(uuidCaptor.capture(), beerCaptor.capture());
 
         // pass
-        // assertThat(newBeer.get("name")).isEqualTo(beerCaptor.getValue().getName());
+        assertThat(newBeer.get("name")).isEqualTo(beerCaptor.getValue().getName());
 
         // fail
-        assertThat("Fail Beer").isEqualTo(beerCaptor.getValue().getName());
+        //assertThat("Fail Beer").isEqualTo(beerCaptor.getValue().getName());
     }
 
     //test delete beer
@@ -102,14 +102,18 @@ class BeerControllerTest {
         Beer testBeer = beerSrvcImpl.listBeers().get(0);
 
         mockMvc.perform(
-                    delete("/api/v1/beer/" + testBeer.getId())
+                    delete(BeerController.BEER_PATH + "/" + testBeer.getId())
                 )
                 .andExpect(status().isNoContent())
         ;
 
         verify(beerService).deleteBeerById(uuidCaptor.capture());
 
-        assertThat(123).isEqualTo(uuidCaptor.getValue());
+        // pass
+        assertThat(testBeer.getId()).isEqualTo(uuidCaptor.getValue());
+
+        // fail
+        //assertThat(123).isEqualTo(uuidCaptor.getValue());
 
     }
 
@@ -127,7 +131,7 @@ class BeerControllerTest {
 
         //perform put
         mockMvc.perform(
-                    put("/api/v1/beer/" + testBeer.getId())
+                    put(BeerController.BEER_PATH + "/" + testBeer.getId())
                             .accept(MediaType.APPLICATION_JSON)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(testBeer))
@@ -137,9 +141,6 @@ class BeerControllerTest {
 
         //to verify whether the underlying service method is called
         verify(beerService).updateBeerById(any(UUID.class), any(Beer.class));
-
-        //negative test
-        verify(beerService).listBeers();
 
         System.out.println(beerSrvcImpl.listBeers());
     }
@@ -162,7 +163,7 @@ class BeerControllerTest {
 
         //perform post
         mockMvc.perform(
-                        post("/api/v1/beer")
+                        post(BeerController.BEER_PATH)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(newBeer))
@@ -184,7 +185,7 @@ class BeerControllerTest {
 
         //perform get and confirm the response has 3 json objects
         mockMvc.perform(
-                    get("/api/v1/beer")
+                    get(BeerController.BEER_PATH)
                             .accept(MediaType.APPLICATION_JSON)
 
                 )
@@ -211,12 +212,13 @@ class BeerControllerTest {
         given(beerService.getBeerById(testBeer.getId())).willReturn(testBeer);
 
         mockMvc.perform(
-                    get("/api/v1/beer/" + testBeer.getId())
+                    get(BeerController.BEER_PATH + "/" + testBeer.getId())
                             .accept(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.name", is("Golden Monkey Tripel")))
+                //.andExpect(jsonPath("$.name", is("Golden Monkey Tripel"))) - fail
+                .andExpect(jsonPath("$.name", is(testBeer.getName()))) // pass
                 ;
 
         System.out.println("Mock Test Completed");
