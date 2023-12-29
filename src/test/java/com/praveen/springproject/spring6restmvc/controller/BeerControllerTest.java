@@ -60,7 +60,6 @@ class BeerControllerTest {
     @BeforeEach
     void setup(){
         beerSrvcImpl = new BeerServiceImpl();
-        uuidCaptor = ArgumentCaptor.forClass(UUID.class);
     }
 
 
