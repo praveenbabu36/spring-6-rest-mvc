@@ -6,6 +6,7 @@ import com.praveen.springproject.spring6restmvc.service.CustomerService;
 import com.praveen.springproject.spring6restmvc.service.CustomerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -30,6 +31,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 import static org.hamcrest.core.Is.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @WebMvcTest(CustomerController.class)
 class CustomerControllerTest {
@@ -50,6 +52,29 @@ class CustomerControllerTest {
         custSrvcImpl = new CustomerServiceImpl();
     }
 
+
+    @Test
+    void deleteCustomer() throws Exception {
+
+        //get first customer obj
+        Customer cust = custSrvcImpl.listCustomers().get(0);
+
+        mockMvc.perform(
+                    delete("/api/v1/customer/" + cust.getId())
+                )
+                .andExpect(status().isNoContent())
+        ;
+
+        ArgumentCaptor<UUID> uuidCaptor = ArgumentCaptor.forClass(UUID.class);
+
+        verify(customerService).deleteCustomer(uuidCaptor.capture());
+
+        //pass
+        //assertThat(cust.getId()).isEqualTo(uuidCaptor.getValue());
+
+        //fail
+        assertThat(123).isEqualTo(uuidCaptor.getValue());
+    }
 
 
     //test update customer
