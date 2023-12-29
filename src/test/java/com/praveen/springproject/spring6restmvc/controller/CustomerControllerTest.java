@@ -7,6 +7,7 @@ import com.praveen.springproject.spring6restmvc.service.CustomerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -14,10 +15,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -47,12 +51,54 @@ class CustomerControllerTest {
 
     CustomerServiceImpl custSrvcImpl;
 
+    @Captor
+    ArgumentCaptor<UUID> uuidCaptor;
+
+    @Captor
+    ArgumentCaptor<Customer> customerCaptor;
+
+
     @BeforeEach
     void setup() {
         custSrvcImpl = new CustomerServiceImpl();
     }
 
 
+
+    // test PATCH method
+    @Test
+    void patchCustomer() throws Exception {
+
+        //get first customer obj
+        Customer cust = custSrvcImpl.listCustomers().get(0);
+
+        // Customer Object to use to update existing
+        Map custMap = new HashMap<>();
+        custMap.put("name", "Lance");
+
+        // perform patch
+        mockMvc.perform(
+                    patch("/api/v1/customer/" + cust.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(custMap))
+                )
+                .andExpect(status().isNoContent())
+                ;
+
+        // capture arg and verify
+        verify(customerService).patchCustomer(uuidCaptor.capture(), customerCaptor.capture());
+
+        // pass
+        //assertThat(custMap.get("name")).isEqualTo(customerCaptor.getValue().getName())
+
+        // fail
+        assertThat("Mathew").isEqualTo(customerCaptor.getValue().getName());
+
+    }
+
+
+    // test DELETE method
     @Test
     void deleteCustomer() throws Exception {
 
@@ -64,8 +110,6 @@ class CustomerControllerTest {
                 )
                 .andExpect(status().isNoContent())
         ;
-
-        ArgumentCaptor<UUID> uuidCaptor = ArgumentCaptor.forClass(UUID.class);
 
         verify(customerService).deleteCustomer(uuidCaptor.capture());
 
