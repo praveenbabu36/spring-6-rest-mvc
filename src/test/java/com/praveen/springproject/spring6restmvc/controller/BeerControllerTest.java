@@ -16,6 +16,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -24,6 +25,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.hamcrest.core.Is.is;
@@ -45,11 +48,51 @@ class BeerControllerTest {
     @Autowired
     ObjectMapper objectMapper;
 
+    @Captor
+    ArgumentCaptor<UUID> uuidCaptor;
+
+    @Captor
+    ArgumentCaptor<Beer> beerCaptor;
+
+
     BeerServiceImpl beerSrvcImpl;
 
     @BeforeEach
     void setup(){
         beerSrvcImpl = new BeerServiceImpl();
+        uuidCaptor = ArgumentCaptor.forClass(UUID.class);
+    }
+
+
+    //test patch method
+    @Test
+    void testPatchBeer() throws Exception {
+
+        //get first beer obj
+        Beer firstBeer = beerSrvcImpl.listBeers().get(0);
+
+        //New beer object to pass in the body
+        Map<String, Object> newBeer = new HashMap<>();
+        newBeer.put("name", "Tiger IPA");
+
+
+        //perform patch
+        mockMvc.perform(
+                    patch("/api/v1/beer/" + firstBeer.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(newBeer))
+                )
+                .andExpect(status().isNoContent())
+                ;
+
+        verify(beerService).patchBeer(uuidCaptor.capture(), beerCaptor.capture());
+
+        // pass
+        // assertThat(newBeer.get("name")).isEqualTo(beerCaptor.getValue().getName());
+
+        // fail
+        assertThat("Fail Beer").isEqualTo(beerCaptor.getValue().getName());
     }
 
     //test delete beer
@@ -64,8 +107,6 @@ class BeerControllerTest {
                 )
                 .andExpect(status().isNoContent())
         ;
-
-        ArgumentCaptor<UUID> uuidCaptor = ArgumentCaptor.forClass(UUID.class);
 
         verify(beerService).deleteBeerById(uuidCaptor.capture());
 
